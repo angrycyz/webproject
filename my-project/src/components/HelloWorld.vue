@@ -17,7 +17,7 @@
                      result = "s"
                      placeholder="Please enter a zip code"
                      v-on:keyup.enter="searchZipcode"
-                     v-model="zipcodeMessage"
+                     v-model.trim="zipcodeMessage"
                      v-bind:style="{ height: searchHeight, width: searchWidth, border: '2px lightgrey solid'}">
             </li>
           </v-flex>
@@ -29,7 +29,7 @@
                      result = "s"
                      placeholder="Please enter an address"
                      v-on:keyup.enter="searchZipcode"
-                     v-model="addressMessage"
+                     v-model.trim="addressMessage"
                      v-bind:style="{ height: searchHeight, width: searchWidth, border: '2px lightgrey solid'}">
             </li>
           </v-flex>
@@ -41,7 +41,7 @@
                      result = "s"
                      placeholder="Please enter a block id"
                      v-on:keyup.enter="searchZipcode"
-                     v-model="blockMessage"
+                     v-model.trim="blockMessage"
                      v-bind:style="{ height: searchHeight, width: searchWidth, border: '2px lightgrey solid'}">
             </li>
           </v-flex>
@@ -65,17 +65,7 @@
                   <v-btn depressed small>Property</v-btn>
                 </v-flex>
                 <v-flex>
-                  <li v-for="(item, key) in propertyInfo">
-                    {{key}} : {{ item }}
-                  </li>
-                </v-flex>
-                <v-flex>
-                  <v-btn depressed small>Assessment</v-btn>
-                </v-flex>
-                <v-flex>
-                  <li v-for="(item, key) in assessmentInfo">
-                    {{key}} : {{ item }}
-                  </li>
+                  <table v-for="(item, key) in addressInfo">{{key}} : {{ item }}</table>
                 </v-flex>
               </div>
 
@@ -84,28 +74,10 @@
                 <p> Result for zipcode searching </p>
                 </v-flex>
                 <v-flex>
-                  <v-btn depressed small>Single Family</v-btn>
+                  <v-btn depressed small>Address Information(Geocode)</v-btn>
                 </v-flex>
                 <v-flex>
-                <li v-for="(item, key) in singleFamily">
-                  {{key}} : {{ item }}
-                </li>
-                </v-flex>
-                <v-flex>
-                  <v-btn depressed small>Multi Family</v-btn>
-                </v-flex>
-                <v-flex>
-                  <li v-for="(item, key) in multiFamily">
-                    {{key}} : {{ item }}
-                  </li>
-                </v-flex>
-                <v-flex>
-                  <v-btn depressed small>Historical</v-btn>
-                </v-flex>
-                <v-flex>
-                  <li v-for="(item, key) in hist">
-                    {{key}} : {{ item }}
-                  </li>
+                  <table v-for="(item, key) in addressInfo">{{key}} : {{ item }}</table>
                 </v-flex>
               </div>
 
@@ -117,9 +89,7 @@
                   <v-btn depressed small>Result</v-btn>
                 </v-flex>
                 <v-flex>
-                  <li v-for="(item, key) in blockResult">
-                    {{key}} : {{ item }}
-                  </li>
+                  <table v-for=v-for="(item, key) in blockResult">{{key}} : {{ item }}</table>
                 </v-flex>
               </div>
               <div v-else>
@@ -173,9 +143,7 @@
         veryLightBlue: '#D4E8F9',
         lightBlue: '#9DCFF9',
         searchResult: [],
-        singleFamily: [],
-        multiFamily: [],
-        hist: [],
+        addressInfo: [],
         propertyInfo: [],
         assessmentInfo: [],
         blockResult: []
@@ -187,10 +155,10 @@
           var endpointURL = ''
           this.addressMessage.replace(/ /g, '+')
           if (this.zipcodeMessage !== '' && this.addressMessage !== '') {
-            endpointURL = '/property/details?address=' + this.addressMessage +
+            endpointURL = 'property/geocode?address=' + this.addressMessage +
             '&zipcode=' + this.zipcodeMessage
           } else if (this.addressMessage !== '') {
-            endpointURL = '/property/details?address=' + this.addressMessage
+            endpointURL = 'property/geocode?address=' + this.addressMessage
           } else if (this.zipcodeMessage !== '') {
             endpointURL = '/zip/details?zipcode=' + this.zipcodeMessage
           } else if (this.blockMessage !== '') {
@@ -211,13 +179,13 @@
             .then(response => {
               this.searchResult = response.data[0]
               console.log('results data', this.searchResult)
-              if (this.addressMessage !== '') {
+              if (this.addressMessage !== '' && this.zipcodeMessage !== '') {
+                var tmp = this.searchResult['address_info']
+                delete tmp.status
+                this.addressInfo = tmp
+              } else if (this.addressMessage !== '') {
                 this.propertyInfo = this.searchResult['property/details']['result']['property']
                 this.assessmentInfo = this.searchResult['property/details']['result']['assessment']
-              } else if (this.zipcodeMessage !== '') {
-                this.singleFamily = this.searchResult['zip/details']['result']['single_family']
-                this.multiFamily = this.searchResult['zip/details']['result']['multi_family']
-                this.hist = this.searchResult['zip/details']['result']['historical']
               } else {
                 this.blockResult = this.searchResult['block/value_distribution']['result']
               }

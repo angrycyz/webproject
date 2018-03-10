@@ -89,7 +89,7 @@
                   <v-btn depressed small>Result</v-btn>
                 </v-flex>
                 <v-flex>
-                  <table v-for=v-for="(item, key) in blockResult">{{key}} : {{ item }}</table>
+                  <table v-for="(item, key) in blockResult">{{key}} : {{ item }}</table>
                 </v-flex>
               </div>
               <div v-else>
@@ -168,7 +168,7 @@
           }
           axios({
             method: 'GET',
-            url: '/v2' + endpointURL,
+            url: 'https://cors-anywhere.herokuapp.com/https://api.housecanary.com/v2/' + endpointURL,
             responseType: 'json',
             withCredentials: false,
             auth: {

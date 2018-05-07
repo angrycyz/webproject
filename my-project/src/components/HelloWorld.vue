@@ -172,8 +172,8 @@
             responseType: 'json',
             withCredentials: false,
             auth: {
-              username: 'KPEIYQF4KZ5AAU9WEC3P',
-              password: 'CoachhC1OwA0jmfxyqtjBIK5dDftYDII'
+              username: '',
+              password: ''
             }
           })
             .then(response => {
